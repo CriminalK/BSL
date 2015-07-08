@@ -1,0 +1,48 @@
+/*
+ * bsl-settings.h
+ *
+ *  Created on: 1 mrt. 2015
+ *      Author: enjschreuder
+ */
+
+#ifndef __BSL_SETTINGS_H__
+#define __BSL_SETTINGS_H__
+
+#include <gtk/gtk.h>
+
+#define BSL_TYPE_SETTINGS			(bsl_settings_get_type ())
+#define BSL_SETTINGS(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), BSL_TYPE_SETTINGS, BslSettings))
+#define BSL_SETTINGS_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), BSL_TYPE_SETTINGS, BslSettingsClass))
+
+typedef struct _BslSettings			BslSettings;
+typedef struct _BslSettingsClass	BslSettingsClass;
+
+struct _BslSettings
+{
+	GtkBin	parent_instance;
+};
+
+struct _BslSettingsClass
+{
+	GtkBinClass	parent_class;
+
+	guint		connect_signal;
+	guint		disconnect_signal;
+};
+
+typedef struct _BslSettingsInformation	BslSettingsInformation;
+
+struct _BslSettingsInformation
+{
+	gchar *	bsl_version;
+	gchar *	chip_id;
+};
+
+GType bsl_settings_get_type(void);
+GtkWidget * bsl_settings_new(void);
+
+void bsl_settings_set_information(BslSettings * bsl_settings, BslSettingsInformation * bsl_settings_information);
+void bsl_settings_set_connected(BslSettings * bsl_settings, gboolean connected);
+
+#endif /* __BSL_SETTINGS_H__ */
+

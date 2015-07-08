@@ -1,0 +1,87 @@
+/*
+ * bsl-controls.c
+ *
+ *  Created on: 1 mrt. 2015
+ *      Author: enjschreuder
+ */
+
+#include <gtk/gtk.h>
+#include "bsl-controls.h"
+
+typedef struct _BslControlsPrivate {
+	GtkWidget *	bsl_progress_bar;
+} BslControlsPrivate;
+
+G_DEFINE_TYPE_WITH_PRIVATE(BslCotnrols, bsl_controls, GTK_TYPE_BIN)
+
+static void bsl_controls_class_init(BslControlsClass * class)
+{
+	class->signal = g_signal_newv(	"signal"						/* signal_name,*/,
+									G_TYPE_FROM_CLASS(class)		/* itype */,
+									G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS /* signal_flags */,
+									NULL							/* class_closure */,
+									NULL							/* accumulator */,
+									NULL							/* accu_data */,
+									g_cclosure_marshal_VOID__VOID	/* c_marshaller */,
+									G_TYPE_NONE						/* return_type */,
+									0								/* n_params */,
+									NULL							/* param_types */);
+}
+
+static void bsl_controls_init(BslControls * bsl_controls)
+{
+	BslControlsPrivate * priv;
+	priv = bsl_controls_get_instance_private(bsl_controls);
+
+	GtkWidget * operation_frame = gtk_frame_new("Operation");
+
+	priv->control_button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+
+	priv->bsl_progress_bar = gtk_progress_bar_new();
+
+	priv->read_button = gtk_button_new_with_label("Read");
+	priv->write_button = gtk_button_new_with_label("Write");
+	priv->validate_button = gtk_button_new_with_label("Validate");
+	priv->erase_button = gtk_button_new_with_label("Erase");
+
+	
+
+	gtk_container_add(GTK_CONTAINER(operation_frame), control_button_box);	
+	gtk_container_add(GTK_CONTAINER(bsl_controls), operation_frame);
+}
+
+GtkWidget * bsl_controls_new(void)
+{
+	return GTK_WIDGET(g_object_new(BSL_TYPE_COTNROLS, NULL));
+}
+
+void bsl_controls_set_progress(BslControls * bsl_controls, gdouble fraction, BslControlsPhase phase, gboolean complete)
+{
+	BslControlsPrivate * priv;
+	priv = bsl_controls_get_instance_private(bsl_controls);
+
+	if (!complete) {
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(priv->bsl_progress_bar), fraction);
+
+		gchar * text;
+		switch (phase)
+		{
+		case BSL_CONTROLS_PHASE_READING:
+			text = "Reading...";
+			break;
+		case BSL_CONTROLS_PHASE_WRITING:
+			text = "Writing...";
+			break;
+		case BSL_CONTROLS_PHASE_VALIDATING:
+			text = "Validating...";
+			break;
+		case BSL_CONTROLS_PHASE_ERASING:
+			text = "Erasing...";
+			break;
+		}
+	}
+	else {
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(priv->bsl_progress_bar), 0.0);
+		gtk_widget_set_sensitive(priv->control_button_box, TRUE);
+	}
+}
